@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Pacifico&display=swap');
+@import "tailwindcss";
+
+/* Below code is added for useTheme() support */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================= Light theme (default) ========================= */
+@theme {
+  --font-pacifico: "Pacifico", "Open Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Base Brand */
+  --color-primary: #0ABAB5;   /* Vibrant Teal */
+  --color-accent:  #FF6F3C;   /* Warm Orange */
+
+  /* Primary Scale */
+  --color-primary-100: #E0F7F6;
+  --color-primary-200: #B3EEEC;
+  --color-primary-300: #80E3E1;
+  --color-primary-400: #4DD8D6;
+  --color-primary-500: #0ABAB5;
+  --color-primary-600: #08A19A;
+  --color-primary-700: #06827D;
+  --color-primary-800: #045E5C;
+  --color-primary-900: #023936;
+
+  /* Accent Scale */
+  --color-accent-100: #FFF4F0;
+  --color-accent-200: #FFD9C8;
+  --color-accent-300: #FFB89F;
+  --color-accent-400: #FF936B;
+  --color-accent-500: #FF6F3C;
+  --color-accent-600: #E65A2F;
+  --color-accent-700: #CC4723;
+  --color-accent-800: #99341A;
+  --color-accent-900: #662312;
+
+  /* Backgrounds */
+  --color-bg: #FAFAFA;
+  --color-elevated: #F3F7F8;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #E9F1F2;
+
+  /* Text */
+  --color-t-primary: #1E293B;
+  --color-t-secondary: #475569;
+  --color-t-muted: #64748B;
+  --color-t-disabled: #9CA3AF;
+
+  /* Borders */
+  --color-border: #D1D5DB;
+
+  /* Feedback */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Shadows / Elevation */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================= Dark theme (<html class="dark">) ========================= */
+@layer theme {
+  .dark {
+    /* Base Brand */
+    --color-primary: #08A19A;  /* Teal accent for dark mode */
+    --color-accent:  #FF8C6D;  /* Softer orange for dark mode */
+
+    /* Primary Scale */
+    --color-primary-100: #023936;
+    --color-primary-200: #045E5C;
+    --color-primary-300: #06827D;
+    --color-primary-400: #08A19A;
+    --color-primary-500: #0ABAB5;
+    --color-primary-600: #4DD8D6;
+    --color-primary-700: #80E3E1;
+    --color-primary-800: #B3EEEC;
+    --color-primary-900: #E0F7F6;
+
+    /* Accent Scale */
+    --color-accent-100: #662312;
+    --color-accent-200: #99341A;
+    --color-accent-300: #CC4723;
+    --color-accent-400: #E65A2F;
+    --color-accent-500: #FF8C6D;
+    --color-accent-600: #FF6F3C;
+    --color-accent-700: #FF5931;
+    --color-accent-800: #FF4120;
+    --color-accent-900: #FF2A0F;
+
+    /* Backgrounds */
+    --color-bg: #0F172A;               /* deep midnight blue */
+    --color-elevated: #1E293B;
+    --color-surface: #111827;
+    --color-surface-elevated: #1A2330;
+
+    /* Text */
+    --color-t-primary: #F8FAFC;
+    --color-t-secondary: #CBD5E1;
+    --color-t-muted: #94A3B8;
+    --color-t-disabled: #64748B;
+
+    /* Borders */
+    --color-border: #334155;
+
+    /* Feedback */
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-error: #F87171;
+    --color-info: #60A5FA;
+
+    /* Shadows / Elevation */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Below mentioned styles are used to edit browser default theme. when autocomplete="on" on fields. */
+@layer base {
+  /* ================= Autofill — Base ================= */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-t-primary);
+    caret-color: var(--color-t-primary);
+    /* Force background */
+    background-color: var(--color-surface) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+    /* Remove Chrome yellow flash */
+    transition: background-color 9999s ease-in-out 0s;
+    /* polishing */
+    border-color: var(--color-border);
+  }
+
+  /* ================= Autofill — Dark ================= */
+  .dark input:-webkit-autofill,
+  .dark textarea:-webkit-autofill,
+  .dark select:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-t-primary);
+    caret-color: var(--color-t-primary);
+    background-color: var(--color-surface) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+    border-color: var(--color-border);
+  }
+}
+
+
+html, body {
+  font-family: "Open Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem; /* Adjusted value as per navbar height for non-sm screens */
+}
+
+/* Small screens (sm) */
+@media (max-width: 640px) {
+  html, body {
+    scroll-padding-top: 3.5rem; /* Adjusted value as per navbar height for sm screens */
+  }
+}
