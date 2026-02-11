@@ -12,7 +12,7 @@ import {
 } from "aws-amplify/auth";
 import { AUTH_ERROR } from "../constants/Messages";
 import { generateClient } from "aws-amplify/data";
-import { uploadData } from "aws-amplify/storage";
+import { remove, uploadData } from "aws-amplify/storage";
 
 import { Amplify } from "aws-amplify";
 import outputs from "../../amplify_outputs.json";
@@ -395,7 +395,7 @@ class AuthService {
 
   // Profile
 
-  async updateUserProfile(data, userCognitoObject, userId) {
+  async updateUserProfile(data, userCognitoObject, userId, toBeDeletedImage) {
     const response = { ...data };
 
     const { profileImage, ...otherData } = data;
@@ -422,6 +422,27 @@ class AuthService {
       });
 
       response.profileImage = await s3BucketService.getImageUrl(result.path);
+    } else if (profileImage === null) {
+      const getFileName = (url) => {
+        // It manages to get file name and also manages params after the name.
+        const parsedUrl = new URL(url);
+        const pathname = parsedUrl.pathname;
+        const fileName = pathname.substring(pathname.lastIndexOf("/") + 1);
+        return decodeURIComponent(fileName);
+      };
+
+      const fileName = getFileName(toBeDeletedImage);
+
+      // console.log("SDSDDS", fileName);
+      const result = await remove({
+        path: ({ identityId }) => {
+          // console.log(`profile-pictures/${identityId}/${fileName}`);
+          return `profile-pictures/${identityId}/${fileName}`;
+        },
+      }).result;
+      console.log("IMAGE Deleted: ", result);
+
+      otherData.profileImage = ""; // Don't make it null
     }
 
     if (Object.keys(userCognitoObject).length > 0) {

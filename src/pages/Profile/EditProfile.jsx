@@ -81,6 +81,7 @@ function EditProfilePage_Fun() {
           userModelObject,
           userCognitoObject,
           user.userId,
+          user.profileImage,
         );
 
         // console.log("response", response);
@@ -247,7 +248,7 @@ function EditProfilePage_Fun() {
                     error={errors.bio?.message}
                     {...register("bio", {
                       maxLength: {
-                        value: 3,
+                        value: 300,
                         message: "Bio is too long.",
                       },
                     })}
