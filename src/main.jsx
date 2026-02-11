@@ -35,6 +35,7 @@ import EditProfilePage from "./pages/Profile/EditProfile.jsx";
 import MyRequestsPage from "./pages/MyRequests.jsx";
 import ProfileCommunitiesPage from "./pages/Profile/ProfileCommunities.jsx";
 import VerifyEmailPage from "./pages/UnAuth/VerifyEmail.jsx";
+import ChangePasswordPage from "./pages/Profile/ChangePassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -79,11 +80,15 @@ const router = createBrowserRouter([
             path: "feed",
             element: <FeedPage />,
           },
-
           {
             path: "requests",
             element: <MyRequestsPage />,
           },
+          {
+            path: "change-password",
+            element: <ChangePasswordPage />,
+          },
+
           {
             path: "communities",
             children: [

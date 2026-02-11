@@ -13,6 +13,7 @@ export default function AuthNavbar({
 
   const userMenuItems = [
     { name: "Your Profile", link: "/profile" },
+    { name: "Change Password", link: "/change-password" },
     { name: "Sign Out" },
   ];
 
