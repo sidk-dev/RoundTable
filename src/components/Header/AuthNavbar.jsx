@@ -2,6 +2,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import HoverButton from "../Button/HoverButton";
 import { useNavigate } from "react-router";
 import { authService } from "../../roundtable";
+import Avatar from "../Avatar";
 
 export default function AuthNavbar({
   auth,
@@ -23,16 +24,12 @@ export default function AuthNavbar({
         onClick={() => setIsUserMenuOpen((p) => !p)}
         className="flex items-center gap-2"
       >
-        {auth.user.profileImage ? (
-          <img
-            src={auth.user.profileImage}
-            className="w-7 h-7 sm:w-8 sm:h-8 border border-border rounded-full"
-          />
-        ) : (
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface flex items-center justify-center font-semibold text-sm sm:text-base">
-            {auth.user.name?.toUpperCase()[0] ?? "U"}
-          </div>
-        )}
+        <Avatar
+          firstName={auth.user.firstName}
+          lastName={auth.user.lastName}
+          profileImage={auth.user.profileImage}
+          size="sm"
+        />
         <ChevronDownIcon
           className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${
             isUserMenuOpen ? "rotate-180" : ""

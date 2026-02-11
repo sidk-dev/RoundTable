@@ -3,6 +3,7 @@ import Container from "../../components/Container/Container";
 import { authService } from "../../roundtable";
 import Button from "../../components/Button/Button";
 import { Link } from "react-router";
+import Avatar from "../../components/Avatar";
 
 function ProfilePage() {
   const user = useSelector((state) => state.auth.user);
@@ -19,10 +20,11 @@ function ProfilePage() {
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
           {/* ProfileImage */}
           <div className="relative">
-            <img
-              src={user.profileImage}
-              alt="Profile Image"
-              className="w-32 h-32 rounded-full object-cover ring-4 ring-primary/20"
+            <Avatar
+              firstName={user.firstName}
+              lastName={user.lastName}
+              profileImage={user.profileImage}
+              size="xlg"
             />
           </div>
 
