@@ -43,7 +43,12 @@ class AuthService {
     });
 
     const userData = data[0];
-    const image = await s3BucketService.getImageUrl(userData.profileImage);
+    let image;
+    try {
+      image = await s3BucketService.getImageUrl(userData.profileImage);
+    } catch {
+      image = null;
+    }
     // console.log(image);
 
     return {
