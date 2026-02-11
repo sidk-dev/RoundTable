@@ -1,43 +1,71 @@
-import React, { useId } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import FormField from "./FormField";
-
-/*
-Usage Example:-
-
-<Controller
-    name="Field"
-    control={control}
-    rules={{ required: "Field is required" }}
-    render={({ field }) => (
-        <FileInput
-        label="Field"
-        accept=".pdf"
-        {...field}
-        error={errors.Field?.message}
-        />
-    )}
-/>
-*/
 
 const FileInput = ({
   label,
   error,
-  value,
+  value, // File | string | null
   onChange,
   disabled = false,
   className = "",
+  accept = "image/*",
   ...props
 }) => {
   const id = useId();
+  const inputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+
+  // Handle preview generation
+  useEffect(() => {
+    if (!value) {
+      setPreview(null);
+      return;
+    }
+
+    // If value is an existing image URL (edit mode)
+    if (typeof value === "string") {
+      setPreview(value);
+      return;
+    }
+
+    // If value is a File
+    if (value && value.type?.startsWith("image/")) {
+      const objectUrl = URL.createObjectURL(value);
+      setPreview(objectUrl);
+
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+
+    setPreview(null);
+  }, [value]);
+
+  const handleRemove = () => {
+    if (disabled) return;
+
+    onChange(null);
+
+    // reset input manually so same file can be selected again
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    onChange(file);
+  };
 
   return (
     <FormField label={label} error={error} labelId={id}>
-      <div className="space-y-1">
+      <div className="space-y-3">
         <input
+          ref={inputRef}
           id={id}
           type="file"
           disabled={disabled}
-          onChange={(e) => onChange(e.target.files?.[0] || null)}
+          accept={accept}
+          onChange={handleFileChange}
           className={`
             block w-full text-sm
             file:mr-4 file:rounded-md file:border-0
@@ -69,10 +97,45 @@ const FileInput = ({
           {...props}
         />
 
+        {/* Preview Section */}
         {value && (
-          <p className="text-xs text-t-muted truncate">
-            Selected: {value.name}
-          </p>
+          <div className="relative inline-block">
+            {preview ? (
+              <div className="relative w-32 h-32 rounded-md overflow-hidden border border-border">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="absolute top-1 right-1 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition"
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-t-muted border border-border rounded-md px-3 py-2">
+                <span className="truncate max-w-[200px]">
+                  {value?.name || "Selected file"}
+                </span>
+
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="text-error hover:text-error/80 transition"
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </FormField>

@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import { profileUpdated } from "../../features/auth/authSlice";
@@ -13,6 +13,9 @@ import {
   LAST_NAME_RULES,
 } from "../../constants/HookFormValidatonRules";
 import SelectInput from "../../components/Input/SelectInput";
+import { useNavigate } from "react-router";
+import FileInput from "../../components/Input/FileInput";
+import TextareaInput from "../../components/Input/TextareaInput";
 
 export default function EditProfilePage() {
   return <EditProfilePage_Fun />;
@@ -21,12 +24,13 @@ export default function EditProfilePage() {
 function EditProfilePage_Fun() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     setError,
+    control,
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -38,6 +42,7 @@ function EditProfilePage_Fun() {
       email: user.email,
       dateOfBirth: user.dateOfBirth,
       bio: user.bio,
+      profileImage: user.profileImage,
     },
   });
 
@@ -65,8 +70,8 @@ function EditProfilePage_Fun() {
         userModelObject.dateOfBirth = data.dateOfBirth;
       } else if (data.bio != user.bio) {
         userModelObject.bio = data.bio;
-      } else if (data.profileImage) {
-        userModelObject.profileImage = data.profileImage[0];
+      } else if (data.profileImage != user.profileImage) {
+        userModelObject.profileImage = data.profileImage;
       }
 
       let totalLength = Object.keys(userModelObject).length;
@@ -80,12 +85,17 @@ function EditProfilePage_Fun() {
 
         // console.log("response", response);
         dispatch(profileUpdated({ ...response }));
-        // navigate("/profile");
+        navigate("/profile");
       } else {
         setError("root", {
           type: "server",
-          message: "No updates in profile.",
+          message: "No edits in profile.",
         });
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth", // Smooth animation
+        });
+        // We can also use "isDirty" from formState
       }
     } catch (error) {
       setError(error.field, {
@@ -196,54 +206,51 @@ function EditProfilePage_Fun() {
                   </SelectInput>
                 </div>
 
-                {/* Profile image – file selector only */}
                 <div className="mt-4">
-                  <label className="mb-1 block text-sm font-medium text-t-secondary">
-                    Profile image
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp"
-                    className="
-                      block w-full cursor-pointer rounded-lg border border-border
-                      bg-surface px-3 py-2 text-sm text-t-primary
-                      file:mr-4 file:rounded-md file:border-0
-                      file:bg-primary file:px-4 file:py-2
-                      file:text-sm file:font-medium file:text-white
-                      hover:file:bg-primary-600
-                      focus:outline-none focus:ring-2 focus:ring-primary
-                    "
-                    {...register("profileImage", {
+                  <Controller
+                    name="profileImage"
+                    control={control}
+                    rules={{
                       validate: {
-                        isImage: (files) =>
-                          !files?.length ||
+                        isImage: (file) =>
+                          !file ||
                           [
                             "image/png",
                             "image/jpeg",
                             "image/jpg",
                             "image/webp",
-                          ].includes(files[0].type) ||
-                          "Only image files are allowed",
-                      },
-                    })}
-                  />
+                          ].includes(file.type) ||
+                          "Only PNG, JPG, JPEG, or WEBP files are allowed",
 
-                  {errors.profileImage && (
-                    <p className="mt-1 text-sm text-error">
-                      {errors.profileImage.message}
-                    </p>
-                  )}
+                        fileSize: (file) =>
+                          !file ||
+                          file.size <= 2 * 1024 * 1024 || // 2MB limit
+                          "Image must be smaller than 2MB",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <FileInput
+                        label="Profile Image"
+                        accept="image/png,image/jpeg,image/jpg,image/webp"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.profileImage?.message}
+                      />
+                    )}
+                  />
                 </div>
 
                 <div className="mt-4">
-                  <label className="mb-1 block text-sm font-medium text-t-secondary">
-                    Bio
-                  </label>
-                  <textarea
-                    rows={4}
-                    className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-t-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                  <TextareaInput
+                    label={"Bio"}
                     placeholder="Tell us a little about yourself"
-                    {...register("bio")}
+                    error={errors.bio?.message}
+                    {...register("bio", {
+                      maxLength: {
+                        value: 3,
+                        message: "Bio is too long.",
+                      },
+                    })}
                   />
                 </div>
               </section>
