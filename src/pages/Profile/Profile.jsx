@@ -8,9 +8,16 @@ import Avatar from "../../components/Avatar";
 function ProfilePage() {
   const user = useSelector((state) => state.auth.user);
 
+  const firstName = user?.firstName || "Unknown";
+  const lastName = user?.lastName || "User";
+  const fullName = `${firstName} ${lastName}`.trim();
+  const bio = user?.bio?.trim()
+    ? user.bio
+    : "No bio added yet. Update your profile to add one.";
+
   const stats = [
-    { label: "Communities", value: user.communitiesCount },
-    { label: "Posts", value: user.postsCount },
+    { label: "Communities", value: user?.communitiesCount ?? 0 },
+    { label: "Posts", value: user?.postsCount ?? 0 },
   ];
 
   return (
@@ -21,9 +28,9 @@ function ProfilePage() {
           {/* ProfileImage */}
           <div className="relative">
             <Avatar
-              firstName={user.firstName}
-              lastName={user.lastName}
-              profileImage={user.profileImage}
+              firstName={firstName}
+              lastName={lastName}
+              profileImage={user?.profileImage}
               size="xlg"
             />
           </div>
@@ -33,7 +40,7 @@ function ProfilePage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div className="text-center lg:text-left">
                 <h1 className="text-3xl font-semibold tracking-tight">
-                  {user.firstName} {user.lastName}
+                  {fullName}
                 </h1>
               </div>
 
@@ -41,6 +48,9 @@ function ProfilePage() {
               <div className="flex justify-center lg:justify-end gap-3">
                 <Link to="/profile/edit">
                   <Button>Edit Profile</Button>
+                </Link>
+                <Link to="/change-password">
+                  <Button>Change Password</Button>
                 </Link>
                 <Button
                   onClick={() => {
@@ -53,7 +63,7 @@ function ProfilePage() {
             </div>
 
             <p className="text-sm text-t-muted max-w-2xl text-center lg:text-left">
-              {user.bio}
+              {bio}
             </p>
           </div>
         </div>

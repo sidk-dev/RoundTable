@@ -1,0 +1,3 @@
+const GLOBAL_POSTS_PAGE_SIZE = 10;
+
+export { GLOBAL_POSTS_PAGE_SIZE };

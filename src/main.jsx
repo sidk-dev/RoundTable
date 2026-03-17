@@ -10,6 +10,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import store from "./store/store.js";
 import Layout from "./layouts/Layout.jsx";
@@ -118,7 +119,7 @@ const router = createBrowserRouter([
                 element: <PostsPage />,
               },
               {
-                path: "create",
+                path: "create", // "create/?communityName=:name&communityId=:id",
                 element: <CreatePostPage />,
               },
               {
@@ -158,10 +159,14 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient();
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </Provider>
   </StrictMode>,
 );

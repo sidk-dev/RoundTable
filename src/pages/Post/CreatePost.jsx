@@ -1,5 +1,5 @@
-function CreatePostPage() {
-  return <p>CreatePostPage</p>;
-}
+import PostForm from "../../components/Post/PostForm";
 
-export default CreatePostPage;
+export default function CreatePostPage() {
+  return <PostForm />;
+}

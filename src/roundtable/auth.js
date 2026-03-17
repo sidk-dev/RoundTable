@@ -8,6 +8,7 @@ import {
   signIn,
   signOut,
   signUp,
+  updatePassword,
   updateUserAttributes,
 } from "aws-amplify/auth";
 import { AUTH_ERROR } from "../constants/Messages";
@@ -43,6 +44,10 @@ class AuthService {
     });
 
     const userData = data[0];
+    if (!userData) {
+      throw new Error("User profile not found.");
+    }
+
     let image;
     try {
       image = await s3BucketService.getImageUrl(userData.profileImage);
@@ -58,6 +63,7 @@ class AuthService {
       firstName: userData.firstName,
       lastName: userData.lastName,
       profileImage: image,
+      profileImagePath: userData.profileImage || null,
       gender: userData.gender,
       dateOfBirth: userData.dateOfBirth,
       bio: userData.bio,
@@ -79,11 +85,12 @@ class AuthService {
       };
 
       switch (nextStep.signInStep) {
-        case "DONE":
+        case "DONE": {
           // Case 1: Verified user, successful login
           const userData = await this._getUser();
           response.userData = { ...userData };
           break;
+        }
 
         case "CONFIRM_SIGN_UP":
           // Case 2: User signed up but didn't verify email
@@ -227,7 +234,7 @@ class AuthService {
       };
 
       switch (nextStep.signUpStep) {
-        case "DONE":
+        case "DONE": {
           // User will reach here...
           // After doing signup (but not confirming the email).
           // Then the user tries to login.
@@ -246,12 +253,14 @@ class AuthService {
             throw new Error(AUTH_ERROR);
           }
           break;
+        }
 
-        case "COMPLETE_AUTO_SIGN_IN":
+        case "COMPLETE_AUTO_SIGN_IN": {
           await autoSignIn();
           let userData = await this._getUser();
           response.userData = { ...userData };
           break;
+        }
 
         default:
           throw new Error(AUTH_ERROR);
@@ -395,54 +404,49 @@ class AuthService {
 
   // Profile
 
-  async updateUserProfile(data, userCognitoObject, userId, toBeDeletedImage) {
-    const response = { ...data };
-
+  async updateUserProfile(
+    data,
+    userCognitoObject,
+    userId,
+    currentProfileImagePath,
+  ) {
     const { profileImage, ...otherData } = data;
 
-    console.log("profileImage", profileImage);
-    if (profileImage) {
+    if (profileImage instanceof File) {
+      const uniqueFileName = `${Date.now()}-${profileImage.name}`;
       const result = await uploadData({
         path: ({ identityId }) => {
-          console.log("identityId: ", identityId);
-          return `profile-pictures/${identityId}/${profileImage.name}`;
+          return `profile-pictures/${identityId}/${uniqueFileName}`;
         },
         data: profileImage,
         options: {
-          // whether to check if an object with the same key already exists before completing the upload
-          preventOverwrite: true,
+          preventOverwrite: false,
         },
       }).result;
 
-      console.log("IMAGE UPLOAD: ", result);
+      otherData.profileImage = result.path;
 
-      await this.client.models.User.update({
-        id: userId,
-        profileImage: result.path,
-      });
-
-      response.profileImage = await s3BucketService.getImageUrl(result.path);
+      if (currentProfileImagePath) {
+        try {
+          await remove({
+            path: currentProfileImagePath,
+          }).result;
+        } catch {
+          // continue profile update even if old image is already missing
+        }
+      }
     } else if (profileImage === null) {
-      const getFileName = (url) => {
-        // It manages to get file name and also manages params after the name.
-        const parsedUrl = new URL(url);
-        const pathname = parsedUrl.pathname;
-        const fileName = pathname.substring(pathname.lastIndexOf("/") + 1);
-        return decodeURIComponent(fileName);
-      };
+      if (currentProfileImagePath) {
+        try {
+          await remove({
+            path: currentProfileImagePath,
+          }).result;
+        } catch {
+          // continue profile update even if old image is already missing
+        }
+      }
 
-      const fileName = getFileName(toBeDeletedImage);
-
-      // console.log("SDSDDS", fileName);
-      const result = await remove({
-        path: ({ identityId }) => {
-          // console.log(`profile-pictures/${identityId}/${fileName}`);
-          return `profile-pictures/${identityId}/${fileName}`;
-        },
-      }).result;
-      console.log("IMAGE Deleted: ", result);
-
-      otherData.profileImage = ""; // Don't make it null
+      otherData.profileImage = "";
     }
 
     if (Object.keys(userCognitoObject).length > 0) {
@@ -460,7 +464,7 @@ class AuthService {
       });
     }
 
-    return response;
+    return await this._getUser();
 
     // // Upload the Storage file:
     // const result = await uploadData({
@@ -521,6 +525,51 @@ class AuthService {
     // } catch (error) {
     //   console.log("Error : ", error);
     // }
+  }
+
+  async changePassword({ oldPassword, newPassword }) {
+    try {
+      await updatePassword({
+        oldPassword,
+        newPassword,
+      });
+    } catch (error) {
+      let field = "root";
+      let safeMessage = "Unable to change password. Please try again.";
+      const errorName = error?.name || error?.code;
+
+      switch (errorName) {
+        case "EmptyUpdatePasswordOldPassword":
+          safeMessage = "Current password is required.";
+          field = "currentPassword";
+          break;
+
+        case "EmptyUpdatePasswordNewPassword":
+          safeMessage = "New password is required.";
+          field = "newPassword";
+          break;
+
+        case "NotAuthorizedException":
+          safeMessage = "Current password is incorrect.";
+          field = "currentPassword";
+          break;
+
+        case "InvalidPasswordException":
+          safeMessage =
+            "New password does not meet password policy requirements.";
+          field = "newPassword";
+          break;
+
+        case "LimitExceededException":
+          safeMessage = "Too many attempts. Please try again later.";
+          break;
+      }
+
+      const err = new Error(safeMessage);
+      err.name = errorName;
+      err.field = field;
+      throw err;
+    }
   }
 }
 

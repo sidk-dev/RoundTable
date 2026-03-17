@@ -51,40 +51,52 @@ function EditProfilePage_Fun() {
   const maxDate = today.toISOString().split("T")[0];
 
   const onSubmit = async (data) => {
-    console.log("data", data);
     clearErrors("root");
 
     try {
       let userModelObject = {};
       let userCognitoObject = {};
 
-      if (data.gender != user.gender) {
-        userModelObject.gender = data.gender;
-      } else if (data.firstName != user.firstName) {
+      if (data.gender !== (user.gender || "")) {
+        userModelObject.gender = data.gender || null;
+      }
+
+      if (data.firstName !== user.firstName) {
         userCognitoObject.given_name = data.firstName;
         userModelObject.firstName = data.firstName;
-      } else if (data.lastName != user.lastName) {
+      }
+
+      if (data.lastName !== user.lastName) {
         userCognitoObject.family_name = data.lastName;
         userModelObject.lastName = data.lastName;
-      } else if (data.dateOfBirth != user.dateOfBirth) {
-        userModelObject.dateOfBirth = data.dateOfBirth;
-      } else if (data.bio != user.bio) {
-        userModelObject.bio = data.bio;
-      } else if (data.profileImage != user.profileImage) {
-        userModelObject.profileImage = data.profileImage;
+      }
+
+      if ((data.dateOfBirth || "") !== (user.dateOfBirth || "")) {
+        userModelObject.dateOfBirth = data.dateOfBirth || null;
+      }
+
+      if ((data.bio || "") !== (user.bio || "")) {
+        userModelObject.bio = data.bio || "";
+      }
+
+      const imageValue = data.profileImage;
+      if (imageValue === null && user.profileImagePath) {
+        userModelObject.profileImage = null;
+      } else if (imageValue instanceof File) {
+        userModelObject.profileImage = imageValue;
       }
 
       let totalLength = Object.keys(userModelObject).length;
+      const hasCognitoUpdate = Object.keys(userCognitoObject).length > 0;
 
-      if (totalLength > 0) {
+      if (totalLength > 0 || hasCognitoUpdate) {
         const response = await authService.updateUserProfile(
           userModelObject,
           userCognitoObject,
           user.userId,
-          user.profileImage,
+          user.profileImagePath,
         );
 
-        // console.log("response", response);
         dispatch(profileUpdated({ ...response }));
         navigate("/profile");
       } else {
@@ -99,7 +111,7 @@ function EditProfilePage_Fun() {
         // We can also use "isDirty" from formState
       }
     } catch (error) {
-      setError(error.field, {
+      setError(error.field || "root", {
         type: "server",
         message: error.message || "Unable to update profile",
       });
@@ -213,19 +225,21 @@ function EditProfilePage_Fun() {
                     control={control}
                     rules={{
                       validate: {
-                        isImage: (file) =>
-                          !file ||
+                        isImage: (value) =>
+                          !value ||
+                          typeof value === "string" ||
                           [
                             "image/png",
                             "image/jpeg",
                             "image/jpg",
                             "image/webp",
-                          ].includes(file.type) ||
+                          ].includes(value.type) ||
                           "Only PNG, JPG, JPEG, or WEBP files are allowed",
 
-                        fileSize: (file) =>
-                          !file ||
-                          file.size <= 2 * 1024 * 1024 || // 2MB limit
+                        fileSize: (value) =>
+                          !value ||
+                          typeof value === "string" ||
+                          value.size <= 2 * 1024 * 1024 ||
                           "Image must be smaller than 2MB",
                       },
                     }}
