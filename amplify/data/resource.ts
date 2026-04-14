@@ -122,13 +122,13 @@ const schema = a
         memberships: a.hasMany("Membership", "communityId"),
       })
       .authorization((allow) => [
-        allow.authenticated().to(["read"]),
+        allow.authenticated().to(["read", "update"]),
         allow.owner(), // by default gives full CRUD for owner
       ])
       .secondaryIndexes((index) => [
         index("visibility")
           .sortKeys(["createdAt"])
-          .queryField("listCommunityByVisibility"),
+          .queryField("listCommunitiesByVisibility"),
       ]),
 
     Membership: a
@@ -137,7 +137,7 @@ const schema = a
           .string()
           .authorization((allow) => [allow.owner().to(["read", "delete"])]), // (See Warning Box) : https://docs.amplify.aws/react/build-a-backend/data/customize-authz/per-user-per-owner-data-access/#add-per-userper-owner-authorization-rule
         role: a.enum(["VIEWER", "WRITER", "ADMIN"]),
-        status: a.enum(["ACTIVE", "PENDING", "REJECTED", "REMOVED"]), // If admin removes the user, the status = "REMOVED", if user leaves then this object gets deleted.
+        // status: a.enum(["ACTIVE", "PENDING", "REJECTED", "REMOVED"]), // If admin removes the user, the status = "REMOVED", if user leaves then this object gets deleted.
         // ### Relationships ###
         communityId: a.id().required(),
         community: a.belongsTo("Community", "communityId"),

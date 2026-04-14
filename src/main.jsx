@@ -33,7 +33,6 @@ import PostPage from "./pages/Post/Post.jsx";
 import EditPostPage from "./pages/Post/EditPost.jsx";
 import ProfilePage from "./pages/Profile/Profile.jsx";
 import EditProfilePage from "./pages/Profile/EditProfile.jsx";
-import MyRequestsPage from "./pages/MyRequests.jsx";
 import ProfileCommunitiesPage from "./pages/Profile/ProfileCommunities.jsx";
 import VerifyEmailPage from "./pages/UnAuth/VerifyEmail.jsx";
 import ChangePasswordPage from "./pages/Profile/ChangePassword.jsx";
@@ -80,10 +79,6 @@ const router = createBrowserRouter([
           {
             path: "feed",
             element: <FeedPage />,
-          },
-          {
-            path: "requests",
-            element: <MyRequestsPage />,
           },
           {
             path: "change-password",
