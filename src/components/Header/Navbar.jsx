@@ -82,11 +82,6 @@ export default function Navbar({ auth }) {
               link: "/posts",
               isActive: location.pathname === "/posts",
             },
-            {
-              name: "Requests",
-              link: "/requests",
-              isActive: location.pathname === "/requests",
-            },
           ]
         : null;
 

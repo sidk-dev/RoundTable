@@ -7,14 +7,26 @@ export default function PostCard({
   community,
   date,
   author,
+  onClick,
 }) {
   const { firstName, lastName, profileImage } = author;
   const fullName = `${firstName} ${lastName}`.trim();
+  const isClickable = typeof onClick === "function";
 
   return (
     <article
       key={id}
-      className="
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (!isClickable) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      className={`
         bg-surface
         border border-border
         rounded-2xl
@@ -23,7 +35,9 @@ export default function PostCard({
         transition
         hover:shadow-md
         hover:border-primary-400
-      "
+        focus:outline-none focus:ring-2 focus:ring-primary-300
+        ${isClickable ? "cursor-pointer" : ""}
+      `}
     >
       {/* Content */}
       <div className="mb-6">

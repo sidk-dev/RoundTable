@@ -1,4 +1,5 @@
 import { Controller, useForm } from "react-hook-form";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { profileUpdated } from "../../features/auth/authSlice";
@@ -26,25 +27,35 @@ function EditProfilePage_Fun() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const defaultValues = useMemo(
+    () => ({
+      gender: user?.gender || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      dateOfBirth: user?.dateOfBirth || "",
+      bio: user?.bio || "",
+      profileImage: user?.profileImage || null,
+    }),
+    [user],
+  );
+
   const {
     register,
     handleSubmit,
     setError,
     control,
     clearErrors,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     mode: "onBlur",
-    defaultValues: {
-      gender: user.gender,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      dateOfBirth: user.dateOfBirth,
-      bio: user.bio,
-      profileImage: user.profileImage,
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const today = new Date();
   today.setFullYear(today.getFullYear() - 18);
@@ -54,33 +65,41 @@ function EditProfilePage_Fun() {
     clearErrors("root");
 
     try {
+      if (!user?.userId) {
+        throw new Error("User session not found. Please login again.");
+      }
+
       let userModelObject = {};
       let userCognitoObject = {};
 
-      if (data.gender !== (user.gender || "")) {
+      const normalizedFirstName = (data.firstName || "").trim();
+      const normalizedLastName = (data.lastName || "").trim();
+      const normalizedBio = (data.bio || "").trim();
+
+      if (data.gender !== (user?.gender || "")) {
         userModelObject.gender = data.gender || null;
       }
 
-      if (data.firstName !== user.firstName) {
-        userCognitoObject.given_name = data.firstName;
-        userModelObject.firstName = data.firstName;
+      if (normalizedFirstName !== (user?.firstName || "")) {
+        userCognitoObject.given_name = normalizedFirstName;
+        userModelObject.firstName = normalizedFirstName;
       }
 
-      if (data.lastName !== user.lastName) {
-        userCognitoObject.family_name = data.lastName;
-        userModelObject.lastName = data.lastName;
+      if (normalizedLastName !== (user?.lastName || "")) {
+        userCognitoObject.family_name = normalizedLastName;
+        userModelObject.lastName = normalizedLastName;
       }
 
-      if ((data.dateOfBirth || "") !== (user.dateOfBirth || "")) {
+      if ((data.dateOfBirth || "") !== (user?.dateOfBirth || "")) {
         userModelObject.dateOfBirth = data.dateOfBirth || null;
       }
 
-      if ((data.bio || "") !== (user.bio || "")) {
-        userModelObject.bio = data.bio || "";
+      if (normalizedBio !== (user?.bio || "")) {
+        userModelObject.bio = normalizedBio;
       }
 
       const imageValue = data.profileImage;
-      if (imageValue === null && user.profileImagePath) {
+      if (imageValue === null && user?.profileImagePath) {
         userModelObject.profileImage = null;
       } else if (imageValue instanceof File) {
         userModelObject.profileImage = imageValue;
@@ -94,7 +113,7 @@ function EditProfilePage_Fun() {
           userModelObject,
           userCognitoObject,
           user.userId,
-          user.profileImagePath,
+          user?.profileImagePath,
         );
 
         dispatch(profileUpdated({ ...response }));

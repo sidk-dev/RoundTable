@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React, { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { useLocation } from "react-router";
 
 import FormMessage from "../../components/Form/FormMessage";
@@ -10,14 +10,24 @@ import Button from "../../components/Button/Button";
 import { postService } from "../../roundtable";
 import { useSelector } from "react-redux";
 
-export default function PostForm({ post, onSuccess }) {
-  // Read query params
+export default function PostForm({ post = null, onSuccess, onCancel }) {
   const user = useSelector((state) => state.auth.user);
+  const isEditMode = Boolean(post?.id);
 
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const communityName = query.get("communityName");
   const communityId = query.get("communityId");
+  const effectiveCommunityId = post?.community?.id || communityId || null;
+
+  const defaultValues = useMemo(
+    () => ({
+      title: post?.title || "",
+      content: post?.content || "",
+      visibility: post?.visibility || "PUBLIC",
+    }),
+    [effectiveCommunityId, post],
+  );
 
   const {
     register,
@@ -28,50 +38,51 @@ export default function PostForm({ post, onSuccess }) {
     formState: { errors, isSubmitting },
   } = useForm({
     mode: "onBlur",
-    defaultValues: {
-      title: post?.title || "",
-      content: post?.content || "",
-      visibility: post?.visibility || "PUBLIC",
-    },
+    defaultValues,
   });
 
+  const isCommunityPost = Boolean(effectiveCommunityId);
+
   useEffect(() => {
-    if (post) {
-      reset({
-        title: post.title,
-        content: post.content,
-        visibility: post.visibility,
-      });
-    }
-  }, [post, reset]);
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const onSubmit = async (data) => {
     clearErrors("root");
 
     try {
-      // Attach communityId if present in query params
-      if (communityId) {
-        data.communityId = communityId;
+      if (!user?.userId) {
+        throw new Error("Please login again and retry.");
       }
 
       const finalData = {
-        authorId: user.userId,
-        ...data,
+        title: data.title,
+        content: data.content,
+        visibility: data.visibility,
       };
 
+      if (!isEditMode) {
+        finalData.authorId = user.userId;
+      }
+
+      const resolvedCommunityId = effectiveCommunityId || null;
+      if (resolvedCommunityId) {
+        finalData.communityId = resolvedCommunityId;
+      }
+
       let result;
-      if (post && post.id) {
-        // Edit mode
+      if (isEditMode) {
         result = await postService.updatePost(post.id, finalData);
       } else {
-        // Create mode
         result = await postService.createPost(finalData);
       }
 
-      //   if (onSuccess) onSuccess(result);
-      reset();
+      if (onSuccess) {
+        await onSuccess(result);
+      } else if (!isEditMode) {
+        reset(defaultValues);
+      }
     } catch (err) {
-      console.error("Error saving post:", err);
       setError("root", {
         type: "server",
         message: err.message || "Failed to save post",
@@ -85,10 +96,10 @@ export default function PostForm({ post, onSuccess }) {
         {/* Page header */}
         <header className="mb-8">
           <h1 className="text-3xl font-semibold text-t-primary">
-            {post ? "Edit Post" : "Create Post"}
+            {isEditMode ? "Edit Post" : "Create Post"}
           </h1>
           <p className="mt-2 max-w-xl text-sm text-t-muted">
-            {post
+            {isEditMode
               ? "Update the content of your post."
               : communityName
                 ? `Create a new post in ${communityName}`
@@ -122,7 +133,17 @@ export default function PostForm({ post, onSuccess }) {
                   <Input
                     label="Title"
                     placeholder="Post title"
-                    {...register("title", { required: "Title is required" })}
+                    {...register("title", {
+                      required: "Title is required",
+                      minLength: {
+                        value: 3,
+                        message: "Title must be at least 3 characters.",
+                      },
+                      maxLength: {
+                        value: 120,
+                        message: "Title must be at most 120 characters.",
+                      },
+                    })}
                     error={errors.title?.message}
                   />
 
@@ -131,32 +152,53 @@ export default function PostForm({ post, onSuccess }) {
                     placeholder="Write your post here..."
                     {...register("content", {
                       required: "Content is required",
+                      minLength: {
+                        value: 10,
+                        message: "Content must be at least 10 characters.",
+                      },
+                      maxLength: {
+                        value: 5000,
+                        message: "Content must be at most 5000 characters.",
+                      },
                     })}
                     error={errors.content?.message}
                   />
 
-                  {/* Show Visibility only if community query params exist */}
-                  {communityId && communityName && (
+                  {isCommunityPost ? (
                     <SelectInput
                       label="Visibility"
-                      {...register("visibility")}
+                      {...register("visibility", {
+                        required: "Visibility is required.",
+                      })}
                       error={errors.visibility?.message}
                     >
                       <option value="PUBLIC">Public</option>
-                      <option value="COMMUNITY">Community</option>
+                      <option value="COMMUNITY_ONLY">Community Only</option>
                     </SelectInput>
-                  )}
+                  ) : null}
                 </div>
               </section>
 
               {/* Actions */}
-              <div className="flex justify-end pt-4">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-4">
+                {onCancel ? (
+                  <Button
+                    type="button"
+                    buttonColor="bg-surface"
+                    className="border border-border"
+                    onClick={onCancel}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                ) : null}
+
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting
-                    ? post
+                    ? isEditMode
                       ? "Updating post…"
                       : "Creating post…"
-                    : post
+                    : isEditMode
                       ? "Update Post"
                       : "Create Post"}
                 </Button>
