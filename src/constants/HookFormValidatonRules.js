@@ -75,3 +75,29 @@ export const VERIFICATION_CODE_RULES = {
     message: "Code must be 6 digits",
   },
 };
+
+export const COMMUNITY_NAME_RULES = {
+  ...TRIM_RULE,
+  required: "Community name is required",
+  minLength: {
+    value: 3,
+    message: "Community name is too short",
+  },
+  maxLength: {
+    value: 80,
+    message: "Community name is too long",
+  },
+};
+
+export const COMMUNITY_DESCRIPTION_RULES = {
+  ...TRIM_RULE,
+  required: "Community description is required",
+  minLength: {
+    value: 10,
+    message: "Community description is too short",
+  },
+  maxLength: {
+    value: 1200,
+    message: "Community description is too long",
+  },
+};
