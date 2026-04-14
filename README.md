@@ -144,4 +144,4 @@ Community standards and enforcement are documented in `CODE_OF_CONDUCT.md`.
 
 ## License
 
-Licensed under the MIT License. See `LICENSE`.
+Licensed under the GPL-3.0 License. See `LICENSE`.
