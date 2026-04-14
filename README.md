@@ -4,7 +4,7 @@ RoundTable is a knowledge-sharing platform where users join public or private co
 
 It is built as a production-style full-stack application with role-based access, moderated community spaces, and a cloud-native backend.
 
-## Resume-Oriented Project Summary
+## Project Summary
 
 RoundTable demonstrates practical engineering across frontend, backend, data modeling, and access control.
 
