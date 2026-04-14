@@ -13,7 +13,7 @@ import {
   userSignUp,
 } from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import useResendCooldown from "../../hooks/useResendCooldownTime";
+import useResendCooldown from "../../hooks/useResendCoolDownTime";
 import { useNavigate } from "react-router";
 
 export default function VerifyEmailPage() {

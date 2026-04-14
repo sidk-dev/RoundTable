@@ -12,7 +12,7 @@ import { FormStyle } from "../../constants/Styles";
 import FormBottomLink from "../../components/Form/BottomLink";
 import AuthRecoveryLayout from "../../layouts/Form/AuthRecoveryLayout";
 import { authService } from "../../roundtable";
-import useResendCooldown from "../../hooks/useResendCooldownTime";
+import useResendCooldown from "../../hooks/useResendCoolDownTime";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 
