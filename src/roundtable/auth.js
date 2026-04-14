@@ -15,14 +15,14 @@ import { AUTH_ERROR } from "../constants/Messages";
 import { generateClient } from "aws-amplify/data";
 import { remove, uploadData } from "aws-amplify/storage";
 
-import { Amplify } from "aws-amplify";
-import outputs from "../../amplify_outputs.json";
+// import { Amplify } from "aws-amplify";
+// import outputs from "../../amplify_outputs.json";
 import s3BucketService from "./s3Bucket";
 
 /*
   This is implemented to: Amplify has not been configured. Please call Amplify.configure() before using this service.
 */
-Amplify.configure(outputs);
+// Amplify.configure(outputs);
 
 class AuthService {
   constructor() {
@@ -55,6 +55,62 @@ class AuthService {
       image = null;
     }
     // console.log(image);
+
+    return {
+      userId: userData.id,
+      currentUserId: currentUserId,
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      profileImage: image,
+      profileImagePath: userData.profileImage || null,
+      gender: userData.gender,
+      dateOfBirth: userData.dateOfBirth,
+      bio: userData.bio,
+      postsCount: userData.postsCount,
+      communitiesCount: userData.communitiesCount,
+      membershipsCount: userData.membershipsCount,
+    };
+  }
+
+  async _getUserById(userId, currentUserId = null) {
+    if (!userId) {
+      throw new Error("User id is required.");
+    }
+
+    const { data: userData, errors } = await this.client.models.User.get(
+      { id: userId },
+      {
+        selectionSet: [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "profileImage",
+          "gender",
+          "dateOfBirth",
+          "bio",
+          "postsCount",
+          "communitiesCount",
+          "membershipsCount",
+        ],
+      },
+    );
+
+    if (errors?.length) {
+      throw errors;
+    }
+
+    if (!userData) {
+      throw new Error("User profile not found.");
+    }
+
+    let image;
+    try {
+      image = await s3BucketService.getImageUrl(userData.profileImage);
+    } catch {
+      image = null;
+    }
 
     return {
       userId: userData.id,
@@ -410,6 +466,7 @@ class AuthService {
     userId,
     currentProfileImagePath,
   ) {
+    const { userId: currentUserId } = await getCurrentUser();
     const { profileImage, ...otherData } = data;
 
     if (profileImage instanceof File) {
@@ -446,7 +503,7 @@ class AuthService {
         }
       }
 
-      otherData.profileImage = "";
+      otherData.profileImage = null;
     }
 
     if (Object.keys(userCognitoObject).length > 0) {
@@ -458,13 +515,17 @@ class AuthService {
     }
 
     if (Object.keys(otherData).length > 0) {
-      await this.client.models.User.update({
+      const updateResult = await this.client.models.User.update({
         id: userId,
         ...otherData,
       });
+
+      if (updateResult?.errors?.length) {
+        throw updateResult.errors;
+      }
     }
 
-    return await this._getUser();
+    return await this._getUserById(userId, currentUserId);
 
     // // Upload the Storage file:
     // const result = await uploadData({
