@@ -1,5 +1,7 @@
 # RoundTable
 
+<img src="public/logo.png" alt="RoundTable Logo" width="100">
+
 RoundTable is a role-aware knowledge platform designed for people who want focused discussions instead of noisy social feeds.
 
 Users sign up, verify email, join or create communities, and contribute through clear membership roles (`VIEWER`, `WRITER`, `ADMIN`) with controlled visibility.
