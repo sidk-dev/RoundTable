@@ -18,27 +18,27 @@ export default function App() {
 
   const benefits = [
     {
-      title: "Signal Over Noise",
+      title: "Secure Auth Foundation",
       description:
-        "Every community is moderated to keep discussions focused, relevant, and valuable.",
+        "Email signup, verification, login, and protected routes ensure authenticated access to app features.",
       accent: "primary",
     },
     {
-      title: "Clear Participation Rules",
+      title: "Public And Private Communities",
       description:
-        "Roles define what you can do, creating structured collaboration instead of chaos.",
+        "Create communities with visibility controls and let members collaborate in focused spaces.",
       accent: "accent",
     },
     {
-      title: "Quality Contributions",
+      title: "Role-Based Membership",
       description:
-        "Posts come from approved writers, ensuring thoughtful insights and credibility.",
+        "Membership roles (VIEWER, WRITER, ADMIN) define who can read, contribute, and manage.",
       accent: "primary",
     },
     {
-      title: "Community-Driven Trust",
+      title: "Personalized Feed",
       description:
-        "Moderators protect standards and culture, keeping communities healthy over time.",
+        "Your feed aggregates posts from communities you joined, with smooth infinite scrolling.",
       accent: "accent",
     },
   ];
@@ -47,34 +47,34 @@ export default function App() {
     {
       title: "Viewer",
       description:
-        "Explore communities and read curated posts. Ideal for learning and staying informed.",
+        "Read posts and explore communities you join without publishing new content.",
       points: [
-        "Browse public communities",
-        "Read approved posts",
-        "Request creator access",
+        "Join public communities",
+        "Read public and community posts",
+        "Follow discussions in your feed",
       ],
       accent: "primary",
     },
     {
       title: "Writer",
       description:
-        "Share insights and contribute knowledge within communities you’re approved for.",
+        "Create and edit posts to share knowledge in communities where you have writer access.",
       points: [
         "Create and edit posts",
-        "Participate in discussions",
-        "Build credibility",
+        "Publish to global or community contexts",
+        "Set post visibility where applicable",
       ],
       accent: "accent",
       featured: true,
     },
     {
-      title: "Moderator",
+      title: "Admin",
       description:
-        "Maintain quality and structure by reviewing access requests and moderating content.",
+        "Own and manage communities, including settings, visibility, and overall structure.",
       points: [
-        "Approve or reject requests",
-        "Moderate posts",
-        "Enforce community rules",
+        "Automatically assigned on community creation",
+        "Update community details",
+        "Manage and grow community spaces",
       ],
       accent: "primary",
     },
@@ -83,21 +83,21 @@ export default function App() {
   const steps = [
     {
       step: "01",
-      title: "Discover a Community",
+      title: "Create Account And Verify Email",
       description:
-        "Explore public communities or discover private spaces centered around focused topics and expertise.",
+        "Sign up with email and password, verify your account, then access protected routes after login.",
     },
     {
       step: "02",
-      title: "Request Access",
+      title: "Join Or Create Communities",
       description:
-        "Apply to join as a Viewer or Creator. Moderators review requests to ensure quality and relevance.",
+        "Browse public communities and join instantly as VIEWER or WRITER, or create your own community as ADMIN.",
     },
     {
       step: "03",
-      title: "Read or Contribute",
+      title: "Read Feed And Publish Posts",
       description:
-        "Once approved, participate by reading curated posts or contributing knowledge based on your role.",
+        "Read posts from joined communities in your feed and publish posts globally or inside communities.",
     },
   ];
 
@@ -113,27 +113,29 @@ export default function App() {
             {/* Text */}
             <div className="flex flex-col gap-6 text-center lg:text-left">
               <span className="inline-flex mx-auto lg:mx-0 w-fit items-center rounded-full border border-border bg-surface px-4 py-1 text-sm text-t-muted">
-                A moderated knowledge platform
+                Focused communities. Practical knowledge.
               </span>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-snug text-t-primary">
-                Thoughtful <span className="text-primary">Communities</span>,{" "}
+                Learn Faster In <span className="text-primary">Structured</span>{" "}
                 <br />
-                Insightful <span className="text-accent">Discussions</span>.
+                <span className="text-accent">Communities</span> That Share
+                Quality.
               </h1>
 
               <p className="text-base lg:text-lg text-t-secondary max-w-xl mx-auto lg:mx-0">
-                RoundTable is a role-based knowledge-sharing platform where
-                access, contribution, and moderation are intentionally designed
-                to protect quality.
+                RoundTable is built for meaningful discussion: verify your
+                account, join focused communities, and contribute with clear
+                role-based permissions as VIEWER, WRITER, or ADMIN.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <RootButton onClick={onButtonClick}>Let's Start</RootButton>
+                <RootButton onClick={onButtonClick}>Get Started</RootButton>
               </div>
 
               <p className="text-sm text-t-muted mt-2">
-                Moderated access • Community-scoped roles • Signal over noise
+                Verified accounts • Public or private communities • Feed from
+                joined spaces
               </p>
             </div>
 
@@ -177,8 +179,8 @@ export default function App() {
               How RoundTable Works
             </h2>
             <p className="text-lg text-t-secondary">
-              A clear, moderated flow designed for structured and meaningful
-              knowledge sharing.
+              A clear product flow from signup to community participation and
+              publishing.
             </p>
           </div>
 
@@ -228,8 +230,8 @@ export default function App() {
               Roles & Responsibilities
             </h2>
             <p className="text-lg text-t-secondary">
-              Every community is structured with clear roles to ensure quality,
-              trust, and meaningful participation.
+              Communities use explicit roles so each user has clear capabilities
+              from day one.
             </p>
           </div>
           <div className="grid gap-8 lg:grid-cols-3">
@@ -282,8 +284,8 @@ export default function App() {
               Why RoundTable
             </h2>
             <p className="text-lg text-t-secondary">
-              Designed for people who value clarity, structure, and meaningful
-              knowledge exchange.
+              Built for authenticated collaboration across communities, posts,
+              and personalized feeds.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -320,15 +322,15 @@ export default function App() {
             <div className="absolute inset-0 rounded-3xl bg-primary/5 pointer-events-none" />
             <div className="relative text-center max-w-3xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-t-primary mb-6">
-                Join Communities That Value Quality
+                Start Collaborating With Clear Roles
               </h2>
               <p className="text-lg text-t-secondary leading-relaxed mb-10">
-                Read with clarity, contribute with purpose, and grow within
-                moderated communities.
+                Join communities, build your feed, and contribute posts where
+                your membership role allows.
               </p>
-              <RootButton onClick={onButtonClick}>Let's Start</RootButton>
+              <RootButton onClick={onButtonClick}>Get Started</RootButton>
               <p className="mt-8 text-sm text-t-muted">
-                Access is moderated • Roles are community-scoped • No spam
+                Viewer, Writer, Admin roles • Public and private communities
               </p>
             </div>
           </div>

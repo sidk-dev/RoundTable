@@ -1,8 +1,10 @@
 # RoundTable
 
-RoundTable is a knowledge-sharing platform where users join public or private communities to contribute and read content.
+RoundTable is a role-aware knowledge platform designed for people who want focused discussions instead of noisy social feeds.
 
-It is built as a production-style full-stack application with role-based access, moderated community spaces, and a cloud-native backend.
+Users sign up, verify email, join or create communities, and contribute through clear membership roles (`VIEWER`, `WRITER`, `ADMIN`) with controlled visibility.
+
+Built as a production-style full-stack app, it combines a modern React frontend with an AWS Amplify Gen 2 backend for authentication, data authorization, and cloud storage.
 
 ## Project Summary
 
