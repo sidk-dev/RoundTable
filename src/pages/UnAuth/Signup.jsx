@@ -54,7 +54,7 @@ export default function SignupPage() {
 
   return (
     <AuthMainLayout
-      imageSrc="https://picsum.photos/seed/picsum/800/600"
+      imageSrc="/auth-image.jpg"
       title="Create your account"
       description="Join us to access powerful tools, insights, and a personalized dashboard."
       headerText={"Sign up"}

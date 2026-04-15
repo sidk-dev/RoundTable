@@ -39,7 +39,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthRecoveryLayout
-      imageSrc="https://picsum.photos/seed/picsum/800/600"
+      imageSrc="/auth-image.jpg"
       title="Forgot your password?"
       description="No worries! Enter your email and we'll send you instructions to reset it."
       headerText="Forgot Password"

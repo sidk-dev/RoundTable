@@ -97,7 +97,7 @@ export default function VerifyEmailPage() {
 
   return (
     <AuthRecoveryLayout
-      imageSrc="https://picsum.photos/seed/picsum/800/600"
+      imageSrc="/auth-image.jpg"
       title="Verify your email"
       description="Enter the verification code we sent to your email address."
       headerText="Email Verification"

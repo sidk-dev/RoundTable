@@ -143,18 +143,18 @@ export default function App() {
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative z-10 rounded-3xl border border-border bg-surface shadow-xl overflow-hidden w-[420px] h-[280px]">
                 <img
-                  src="https://picsum.photos/520/380"
+                  src="/group.jpg"
                   alt="Community discussion"
                   className="object-cover w-full h-full"
                 />
               </div>
               <img
-                src="https://picsum.photos/160/160?random=1"
+                src="/nature-1.jpg"
                 alt="Insight"
                 className="hidden lg:block absolute -top-10 left-10 w-36 h-36 rounded-2xl object-cover border border-border shadow-lg"
               />
               <img
-                src="https://picsum.photos/160/160?random=2"
+                src="/nature-2.jpg"
                 alt="Collaboration"
                 className="hidden lg:block absolute -bottom-12 right-10 w-32 h-32 rounded-2xl object-cover border border-border shadow-lg"
               />

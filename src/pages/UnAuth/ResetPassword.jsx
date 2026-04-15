@@ -93,7 +93,7 @@ export default function ResetPassword() {
 
   return (
     <AuthRecoveryLayout
-      imageSrc="https://picsum.photos/seed/picsum/800/600"
+      imageSrc="/auth-image.jpg"
       title="Reset your password"
       description="Enter the verification code sent to your email and choose a new password."
       headerText="Reset Password"

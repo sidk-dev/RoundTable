@@ -69,7 +69,7 @@ export default function LoginPage() {
 
   return (
     <AuthMainLayout
-      imageSrc="https://picsum.photos/seed/picsum/800/600"
+      imageSrc="/auth-image.jpg"
       title="Welcome back"
       description="Secure access to your dashboard, insights, and tools — all in one place."
       headerText={"Log In"}
