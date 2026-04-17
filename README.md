@@ -1,44 +1,74 @@
 # RoundTable
 
-<img src="public/logo.png" alt="RoundTable Logo" width="100">
+<p align="center">
+	<img src="public/logo.png" alt="RoundTable Logo" width="110" />
+</p>
 
-RoundTable is a role-aware knowledge platform designed for people who want focused discussions instead of noisy social feeds.
+<p align="center">
+	A role-aware community platform for focused knowledge sharing.
+</p>
 
-Users sign up, verify email, join or create communities, and contribute through clear membership roles (`VIEWER`, `WRITER`, `ADMIN`) with controlled visibility.
+<p align="center">
+	<a href="#overview">Overview</a> •
+	<a href="#features">Features</a> •
+	<a href="#architecture">Architecture</a> •
+	<a href="#quick-start">Quick Start</a> •
+	<a href="#security-model">Security Model</a>
+</p>
 
-Built as a production-style full-stack app, it combines a modern React frontend with an AWS Amplify Gen 2 backend for authentication, data authorization, and cloud storage.
+## Overview
 
-## Project Summary
+RoundTable is a full-stack social knowledge platform built to emphasize structured collaboration over noisy timelines.
 
-RoundTable demonstrates practical engineering across frontend, backend, data modeling, and access control.
+Users can:
 
-- Designed a role-based content system with scoped permissions (`VIEWER`, `WRITER`, `ADMIN`).
-- Built secure authentication and email verification flows with AWS Cognito via Amplify Auth.
-- Modeled relational community data (`User`, `Community`, `Membership`, `Post`) with authorization-aware schema rules.
-- Implemented scalable feed behavior using React Query infinite pagination and cache management.
-- Added object storage workflows for profile and post assets with identity-scoped S3 paths.
+- sign up and verify identity,
+- join or create communities,
+- publish posts globally or within communities,
+- participate through explicit membership roles: `VIEWER`, `WRITER`, `ADMIN`.
 
-## Product Concept
+This project is designed to showcase production-oriented engineering choices across frontend UX, backend authorization, and cloud-native data/storage design.
 
-The platform prioritizes signal over noise:
+## Why This Project Stands Out
 
-- Community-centric structure instead of a flat social feed.
-- Moderated participation with explicit membership roles.
-- Public and private community visibility.
-- Public and community-only post visibility.
-- Authenticated data access with owner and role-based controls.
+- Clear role-based access model with practical permissions.
+- End-to-end auth lifecycle with Cognito and route protection.
+- Scalable feed experience using infinite pagination and client caching.
+- Authorization-aware domain modeling in Amplify Data.
+- Identity-scoped media storage with S3 access controls.
+- Post-confirmation Lambda that provisions profile data automatically.
 
-## Key Features
+## Features
 
-- Email/password auth, verification, login, logout, password reset
-- Protected routing for authenticated experiences
-- Community lifecycle: create, browse, edit, join, leave
-- Post lifecycle: create, view, edit, filter by visibility
-- Joined-community feed with infinite scrolling
-- Profile management including image support
-- Counter synchronization for posts and memberships
+### Authentication
 
-## Technology Stack
+- Email/password signup and login
+- Email verification flow
+- Forgot/reset password flow
+- Protected and public route segmentation
+
+### Communities
+
+- Create and edit communities
+- Public/private visibility model
+- Join/leave public communities
+- Membership roles (`VIEWER`, `WRITER`, `ADMIN`)
+
+### Posts And Feed
+
+- Create, edit, and read posts
+- Public and community-only visibility behavior
+- Joined-community feed
+- Infinite scrolling with React Query
+
+### Profile And Media
+
+- Editable profile details
+- Profile picture support
+- Post image support
+- Counter tracking (posts, communities, memberships)
+
+## Tech Stack
 
 ### Frontend
 
@@ -53,99 +83,133 @@ The platform prioritizes signal over noise:
 ### Backend and Cloud
 
 - AWS Amplify Gen 2
-- Amazon Cognito (auth)
-- Amplify Data model API with authorization rules
-- Amazon S3 (storage) via Amplify Storage
-- AWS Lambda trigger (post-confirmation user provisioning)
+- Amazon Cognito for authentication
+- Amplify Data for typed models and auth rules
+- Amazon S3 (Amplify Storage) for user media
+- AWS Lambda post-confirmation trigger
 
 ### Tooling
 
 - ESLint 9
-- Modern ESM JavaScript project setup
+- ESM-based JavaScript project structure
 
-## Architecture Highlights
+## Architecture
 
-Frontend responsibilities:
+### Frontend Structure
 
-- `src/main.jsx`: Amplify configuration and app providers
-- `src/layouts/Layout.jsx`: auth session restore and auth event handling
-- `src/components/Routes/ProtectedRoute.jsx`: route-level access guard
-- `src/roundtable/*`: service layer for auth, community, post, storage operations
+- `src/main.jsx`: app bootstrap, providers, Amplify wiring
+- `src/layouts/Layout.jsx`: session restoration and auth event handling
+- `src/components/Routes/ProtectedRoute.jsx`: authenticated route gate
+- `src/roundtable/`: service layer (`auth`, `community`, `post`, `s3Bucket`)
 
-Backend responsibilities:
+### Backend Structure
 
-- `amplify/backend.ts`: backend composition and user-pool policy customization
-- `amplify/data/resource.ts`: schema + auth rules + index/query definitions
-- `amplify/auth/post-confirmation/handler.ts`: create user profile after signup confirmation
-- `amplify/storage/resource.ts`: identity-scoped storage access rules
+- `amplify/backend.ts`: backend composition and Cognito password policy
+- `amplify/data/resource.ts`: schema, relationships, indexes, auth rules
+- `amplify/auth/post-confirmation/handler.ts`: creates user profile record on signup confirmation
+- `amplify/storage/resource.ts`: identity-scoped profile/post image storage rules
 
-## Data Model Overview
+### Domain Model
 
-- `User`: identity-linked profile, counters, authored posts, memberships
-- `Community`: ownership, visibility, post/member counters
-- `Membership`: user-community relationship with role
-- `Post`: author-linked content with optional community and visibility controls
+- `User`: profile data, ownership metadata, counters, relations
+- `Community`: owner, visibility, counters, post/member relations
+- `Membership`: role-based user-to-community link
+- `Post`: author-linked content with optional community and visibility scope
 
-## Getting Started
+## Security Model
+
+RoundTable applies defense-in-depth with both auth and model-level authorization:
+
+- Default data authorization mode uses Cognito user pool tokens.
+- Owner-based permissions are enforced on sensitive operations.
+- Authenticated read access is scoped by model rules.
+- S3 access is path-scoped by signed-in identity (`{entity_id}`).
+
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 20+
 - npm
-- AWS account access for Amplify backend development
+- AWS account with permissions for Amplify resources
 
-### Installation
+### 1) Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Run In Development
+### 2) Prepare Backend Outputs
+
+This frontend expects `amplify_outputs.json` in the repository root.
+
+For local backend development, run Amplify sandbox in a separate terminal:
+
+```bash
+npx ampx sandbox
+```
+
+After sandbox deployment, confirm `amplify_outputs.json` is generated.
+
+### 3) Run Frontend
 
 ```bash
 npm run dev
 ```
 
-### Lint
+### 4) Quality Checks
 
 ```bash
 npm run lint
+npm run build
 ```
 
-### Build
+## Repository Layout
+
+```text
+amplify/                 Amplify Gen 2 backend resources (auth, data, storage)
+	auth/                  Auth resources + post-confirmation trigger
+	data/                  Data schema and authorization rules
+	storage/               S3 storage definitions and access policies
+src/                     React application source
+	components/            Reusable UI and route guards
+	layouts/               Auth-aware layout orchestration
+	pages/                 Route-level screens
+	roundtable/            Service layer for backend operations
+public/                  Static assets and web app icons
+```
+
+## Deployment
+
+This repository includes Amplify Hosting build config in `amplify.yml`.
+
+Pipeline backend deploy command:
+
+```bash
+npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+```
+
+Frontend build command:
 
 ```bash
 npm run build
 ```
 
-## Environment and Backend Notes
+## Roadmap Ideas
 
-- `amplify_outputs.json` must exist at the project root for frontend-to-backend integration.
-- Backend changes under `amplify/` should include corresponding frontend service updates under `src/roundtable/` when needed.
-- Keep schema and authorization updates documented in pull requests.
-
-## Repository Layout
-
-```text
-amplify/      Amplify Gen 2 auth, data, and storage resources
-src/          React frontend app source
-public/       Static assets
-```
-
-## Quality and Security
-
-- User pool authentication is enforced for data access.
-- Model-level owner/authenticated rules control read/write operations.
-- S3 write access is scoped to the signed-in identity path.
+- Moderation workflows for private community approvals
+- Rich text editor for posts
+- Notifications for membership and post activity
+- Role management UI enhancements for admins
 
 ## Contributing
 
-Contribution workflow, coding standards, and review expectations are documented in `CONTRIBUTING.md`.
+Read `CONTRIBUTING.md` for contribution workflow, coding standards, and pull request expectations.
 
 ## Code of Conduct
 
-Community standards and enforcement are documented in `CODE_OF_CONDUCT.md`.
+Read `CODE_OF_CONDUCT.md` for community guidelines and enforcement details.
 
 ## License
 
-Licensed under the GPL-3.0 License. See `LICENSE`.
+This project is licensed under GPL-3.0. See `LICENSE`.

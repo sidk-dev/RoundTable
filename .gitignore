@@ -29,4 +29,4 @@ node_modules/
 src/__OLD__/
 .amplify/
 amplify_outputs.json
-src (n)
+temp
