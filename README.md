@@ -65,7 +65,6 @@ This project is designed to showcase production-oriented engineering choices acr
 
 - Editable profile details
 - Profile picture support
-- Post image support
 - Counter tracking (posts, communities, memberships)
 
 ## Tech Stack
