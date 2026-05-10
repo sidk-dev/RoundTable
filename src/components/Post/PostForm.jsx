@@ -185,7 +185,6 @@ export default function PostForm({ post = null, onSuccess, onCancel }) {
                   <Button
                     type="button"
                     buttonColor="bg-surface"
-                    className="border border-border"
                     onClick={onCancel}
                     disabled={isSubmitting}
                   >

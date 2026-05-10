@@ -148,7 +148,6 @@ export default function CommunityForm({ community = null, onSuccess }) {
                 <Button
                   type="button"
                   buttonColor="bg-surface"
-                  className="border border-border"
                   onClick={() => navigate(-1)}
                 >
                   Cancel

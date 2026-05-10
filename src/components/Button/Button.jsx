@@ -8,24 +8,18 @@ export default function Button({
 }) {
   return (
     <button
-      className={`relative block group cursor-pointer ${textColor} ${className}`}
+      className={`relative inline-flex cursor-pointer select-none focus:outline-none group ${className}`}
       {...props}
-      // onClick={(e) => onClick && onClick(e)}
     >
       <span
-        className={`absolute inset-0 border-dashed rounded-lg ${isBold ? "border-2" : "border"} ${textColor}`}
-      ></span>
-      <div
-        className={`transition rounded-lg group-hover:-translate-x-1 group-hover:-translate-y-1 ${buttonColor} ${isBold ? "border-2" : "border"} ${textColor} `}
+        className={`absolute inset-0 translate-x-0 translate-y-0 rounded-xl border-dashed transition-all duration-150 group-hover:translate-x-0.5 group-hover:translate-y-0.5 ${isBold ? "border-2" : "border"} ${textColor}`}
+      />
+
+      <span
+        className={`relative z-10 inline-flex items-center justify-center rounded-xl px-4 py-2 whitespace-nowrap text-sm tracking-wide transition-all duration-150 ease-out group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-sm group-hover:shadow-md ${isBold ? "font-semibold border-2" : "font-medium border"} ${buttonColor} ${textColor}`}
       >
-        <div className="py-1 px-2">
-          <p
-            className={`flex justify-center align-middle whitespace-nowrap ${isBold ? "font-medium" : "font-normal"} ${textColor}`}
-          >
-            {children}
-          </p>
-        </div>
-      </div>
+        {children}
+      </span>
     </button>
   );
 }
